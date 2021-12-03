@@ -17,7 +17,7 @@ public class SellInUpdateHandler extends AbstractItemUpdateHandler {
     protected static void increaseSellIn(Item item, int sellInIncrease) {
         int sellInIncrementWithConstraints = sellInIncrease;
 
-        if (ItemPropertyPossession.isLegendary(item)) sellInIncrementWithConstraints = sellInOfLegendaryConstraint();
+        if (ItemTypeMembership.isLegendary(item)) sellInIncrementWithConstraints = sellInOfLegendaryConstraint();
 
         item.sellIn += sellInIncrementWithConstraints;
     }

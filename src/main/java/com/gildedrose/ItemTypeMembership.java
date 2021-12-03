@@ -2,7 +2,7 @@ package com.gildedrose;
 
 import java.util.Arrays;
 
-public class ItemPropertyPossession {
+public class ItemTypeMembership {
     public static final String[] LEGENDARIES = new String[] {"Sulfuras, Hand of Ragnaros"};
     public static final String[] BACKSTAGE_PASSES = new String[] {"Backstage passes to a TAFKAL80ETC concert"};
     public static final String CONJURED_LOWERCASE = "conjured";
