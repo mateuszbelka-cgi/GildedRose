@@ -12,7 +12,7 @@ class GildedRose {
     }
 
     /*
-     * The entry point function responsible for updating Item instance variables (quality, sellIn)
+     * The entry point function responsible for updating Item instance properties (quality, sellIn)
      * of all items present in the GildedRose items array instance variable.
      *
      * The two function calls accept an Item as parameter and
@@ -20,8 +20,8 @@ class GildedRose {
      */
     public void updateQuality() {
         for (Item item : items) {
-            QualityUpdateHandler.updateEndOfDay(item);
             SellInUpdateHandler.updateEndOfDay(item);
+            QualityUpdateHandler.updateEndOfDay(item);
         }
     }
 }
