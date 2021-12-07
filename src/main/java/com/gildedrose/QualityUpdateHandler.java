@@ -1,7 +1,5 @@
 package com.gildedrose;
 
-import javax.sound.midi.SysexMessage;
-
 public class QualityUpdateHandler {
     private static final int MAX_QUALITY = 50;
     private static final int LEGENDARY_QUALITY = 80;
