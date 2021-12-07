@@ -7,7 +7,7 @@ public class ItemTypeMembership {
     public static final String BACKSTAGE_PASSES_LOWERCASE_SUBSTRING = "backstage passes";
     public static final String CONJURED_LOWERCASE_SUBSTRING = "conjured";
     public static final String AGED_BRIE = "Aged Brie";
-    public static final int EXPIRATION_AFTER_SELLIN_OF = 0;
+    public static final int EXPIRATION_AFTER_SELL_IN_OF = 0;
 
     /**
      * Determines the legendary status of an item.
@@ -60,6 +60,6 @@ public class ItemTypeMembership {
      * @return          a boolean, specifies whether an item is expired. TRUE if it is, FALSE if it is not
      */
     protected static boolean isExpired(Item item) {
-        return item.sellIn < EXPIRATION_AFTER_SELLIN_OF;
+        return item.sellIn < EXPIRATION_AFTER_SELL_IN_OF;
     }
 }

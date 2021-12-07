@@ -56,7 +56,7 @@ public class QualityUpdateHandler {
         int qualityDecreaseWithConstraints = qualityDecrease;
 
         qualityDecreaseWithConstraints = applyGeneralConstraintsToQuality(item, qualityDecreaseWithConstraints);
-        qualityDecreaseWithConstraints = applyDowngradingWithTimeConstraintsToQuality(item, qualityDecreaseWithConstraints);
+        qualityDecreaseWithConstraints = applyNotUpgradingWithTimeConstraintsToQuality(item, qualityDecreaseWithConstraints);
 
         item.quality -= qualityDecreaseWithConstraints;
     }
@@ -66,9 +66,8 @@ public class QualityUpdateHandler {
      * the originally provided amount to change the item's quality by should be modified.
      *
      * The criteria based on which the change can be made includes:
-     *      - Legendary status
      *      - Conjured status
-     *      - Backstage passes
+     *      - Expired status
      *
      * @param   item            an item whose quality is to be changed,
      * @param   qualityChange   an integer by which the item's quality is to be changed
@@ -79,7 +78,6 @@ public class QualityUpdateHandler {
 
         qualityChangeWithConstraints = qualityOfConjuredConstraint(item, qualityChangeWithConstraints);
         qualityChangeWithConstraints = qualityExpiredConstraint(item, qualityChangeWithConstraints);
-        qualityChangeWithConstraints = qualityOfLegendaryConstraint(item, qualityChangeWithConstraints);
 
         return qualityChangeWithConstraints;
     }
@@ -90,13 +88,11 @@ public class QualityUpdateHandler {
      *
      * The criteria based on which the change can be made includes:
      *      - Backstage passes
+     *      - Quality after update exceeds 50
      *
-     * With exception to Legendary Items, the quality may not be outside the range of 0 and 50.
-     * Hence, any request to change the item's quality outside that range is bound to those limits.
-     *
-     * @param   item                an item whose quality is to be changed,
-     * @param   qualityIncrease     an integer by which the item's quality is to be changed
-     * @return                      an integer, the amount by which the quality will be changed after applying all upgrading with time constraints
+     * @param   item                an item whose quality is to be increased,
+     * @param   qualityIncrease     an integer by which the item's quality is to be increased
+     * @return                      an integer, the amount by which the quality will be increased after applying all upgrading with time constraints
      */
     private static int applyUpgradingWithTimeConstraintsToQuality(Item item, int qualityIncrease) {
         int qualityIncreaseWithConstraints = qualityIncrease;
@@ -108,22 +104,21 @@ public class QualityUpdateHandler {
     }
 
     /**
-     * Checks against certain criteria of an item that is upgrading with time to determine whether
+     * Checks against certain criteria of an item that is not upgrading with time to determine whether
      * the originally provided amount to change the item's quality by should be modified.
      *
      * The criteria based on which the change can be made includes:
-     *      - Backstage passes
-     *
-     * The quality may not be below 0.
-     * Hence, any request to change the item's quality outside that range is bound to those limits.
+     *      - Legendary status
+     *      - Quality after update is below 0
      *
      * @param   item                an item whose quality is to be changed,
      * @param   qualityDecrease     an integer by which the item's quality is to be changed
      * @return                      an integer, the amount by which the quality will be changed after applying all downgrading with time constraints
      */
-    private static int applyDowngradingWithTimeConstraintsToQuality(Item item, int qualityDecrease) {
+    private static int applyNotUpgradingWithTimeConstraintsToQuality(Item item, int qualityDecrease) {
         int qualityDecreaseWithConstraints = qualityDecrease;
 
+        qualityDecreaseWithConstraints = qualityOfLegendaryConstraint(item, qualityDecreaseWithConstraints);
         qualityDecreaseWithConstraints = qualityNotBelowZeroConstraint(item, qualityDecreaseWithConstraints);
 
         return qualityDecreaseWithConstraints;
@@ -132,10 +127,10 @@ public class QualityUpdateHandler {
     /**
      * In case the amount by which the quality is to be decreased would result in the item's quality being below 0
      * the function returns a modified amount to decrease the item's quality by such amount that the
-     * "not below 0 quality" constraint is preserved.
+     * "not below 0 quality" constraint is maintained.
      * @param   item                an item whose quality is to be decreased,
      * @param   qualityDecrease     an integer by which the item's quality is to be decreased
-     * @return                      an integer, the amount to increase the quality after applying the "not below 0 quality" constraint
+     * @return                      an integer, the amount to decrease the quality after applying the "not below 0 quality" constraint
      */
     private static int qualityNotBelowZeroConstraint(Item item, int qualityDecrease) {
         return Math.min(qualityDecrease, item.quality);
@@ -144,30 +139,29 @@ public class QualityUpdateHandler {
     /**
      * In case the amount by which the quality is to be changed would result in the item's quality being above 50
      * the function returns a modified amount to change the item's quality by such amount that the
-     * "not above 50 quality" constraint is preserved.
-     * @param   item                an item whose quality is to be changed,
-     * @param   qualityIncrease     an integer by which the item's quality is to be changed
+     * "not above 50 quality" constraint is maintained.
+     * @param   item                an item whose quality is to be increased,
+     * @param   qualityIncrease     an integer by which the item's quality is to be increased
      * @return                      an integer, the amount to increase the quality after applying the "not above 50 quality" constraint
      */
     private static int qualityNotAboveFiftyConstraint(Item item, int qualityIncrease) {
-        if (ItemTypeMembership.isLegendary(item)) return qualityOfLegendaryConstraint(item, qualityIncrease);
         return Math.min(qualityIncrease, MAX_QUALITY - item.quality);
     }
 
     /**
      * Given that the item whose quality is to be changed is legendary,
      * the appropriate limitations for legendary item's quality change are applied.
-     * Legendary items' quality is to always be 80.
+     * Legendary items' quality should always be 80.
      * Therefore, this function returns as the amount to be increased the difference between the legendary expected quality
      * and the current quality of the legendary item. As such after the "end of day" update to item's quality,
      * the legendary item will have the expected 80 quality.
-     * @param   item            an item whose quality is to be changed,
-     * @param   qualityChange   an integer by which the item's quality is to be changed
-     * @return                  an integer, the amount to increase the quality after applying the "legendary items quality" constraint
+     * @param   item                an item whose quality is to be decreased,
+     * @param   qualityDecrease     an integer by which the item's quality is to be decreased
+     * @return                      an integer, the amount to decrease the quality after applying the "legendary items quality" constraint
      */
-    private static int qualityOfLegendaryConstraint(Item item, int qualityChange) {
-        if (!ItemTypeMembership.isLegendary(item)) return qualityChange;
-        return LEGENDARY_QUALITY - item.quality;
+    private static int qualityOfLegendaryConstraint(Item item, int qualityDecrease) {
+        if (!ItemTypeMembership.isLegendary(item)) return qualityDecrease;
+        return item.quality - LEGENDARY_QUALITY;
     }
 
     /**
@@ -184,13 +178,13 @@ public class QualityUpdateHandler {
     }
 
     /**
-     * Given that the item whose quality is to be increased in a backstage pass,
+     * Given that the item whose quality is to be increased is a backstage pass,
      * the appropriate modifications for changing quality of backstage pass items are applied.
-     * Whenever the quality of backstage passes is increased, the amount by which it is increased is affected by
+     * Whenever the quality of a backstage pass is increased, the amount by which it is increased is affected by
      * the time proximity to the concert.
      *
      * If the concert has already happened, which is indicated by sellIn below 0, the quality is to become 0.
-     * That is achieved by setting the amount by which the item's quality is to be increased to the inverse of the item's
+     * That is achieved by setting the amount by which the item's quality is to be increased, to the inverse of the item's
      * current quality.
      *
      * If the concert will be in 5 days or less, the quality of the item increases by 3.
@@ -221,9 +215,9 @@ public class QualityUpdateHandler {
 
     /**
      * For items whose sellIn is below 0, the change to their quality is multiplied by the factor of 2.
-     * @param   item            an item whose quality is to be increased,
-     * @param   qualityChange   an integer by which the item's quality is to be increased
-     * @return                  an integer, the amount to increase the quality after applying the "passed sell by date quality" constraint
+     * @param   item            an item whose quality is to be changed,
+     * @param   qualityChange   an integer by which the item's quality is to be changed
+     * @return                  an integer, the amount to change the quality after applying the "passed sell by date quality" constraint
      */
     private static int qualityExpiredConstraint(Item item, int qualityChange) {
         if (!ItemTypeMembership.isExpired(item)) return qualityChange;
