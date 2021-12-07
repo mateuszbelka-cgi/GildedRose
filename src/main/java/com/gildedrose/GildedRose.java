@@ -3,15 +3,15 @@ package com.gildedrose;
 class GildedRose {
     Item[] items;
 
-    /*
+    /**
      * The GildedRose constructor. Assigns given array of items to the GildedRose instance variable.
-     * @param   An array of items
+     * @param   items   An array of items
      */
     public GildedRose(Item[] items) {
         this.items = items;
     }
 
-    /*
+    /**
      * The entry point function responsible for updating Item instance properties (quality, sellIn)
      * of all items present in the GildedRose items array instance variable.
      *
