@@ -29,7 +29,7 @@ public class QualityUpdateHandler {
      * Increases the provided item's quality by specified amount.
      *
      * Applies the relevant constraints as defined within
-     * applyConstraintsToQuality's and applyUpgradingWithTimeConstraintsToQuality's documentation.
+     * applyGeneralConstraintsToQuality's and applyUpgradingWithTimeConstraintsToQuality's documentation.
      *
      * @param   item                an item whose quality is to be increased,
      * @param   qualityIncrease     an integer by which the item's quality is to be increased
@@ -47,7 +47,7 @@ public class QualityUpdateHandler {
      * Decreases the provided item's quality by specified amount.
      *
      * Applies the relevant constraints as defined within
-     * applyConstraintsToQuality's and applyDowngradingWithTimeConstraintsToQuality's documentation.
+     * applyGeneralConstraintsToQuality's and applyNotUpgradingWithTimeConstraintsToQuality's documentation.
      *
      * @param   item                an item whose quality is to be decreased,
      * @param   qualityDecrease     an integer by which the item's quality is to be decreased
